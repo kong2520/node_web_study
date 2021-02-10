@@ -26,19 +26,19 @@ router.post('/login', function(req, res, next) {
             req.session.user =
                 {
                     name: rows[0].name,
-                    pw: passwd,
+                    email: email,
                     authorized: true
                 };
             if(req.session.user == null){
                 console.log('hi')
-            } else{
-                console.log(req.session.user)
             };
             res.redirect('../board/list/');
+            // res.render('list', {username:username});
         }
     });
 });
 
+// 로그아웃
 router.get('/logout', function(req, res, next) {
     if (req.session.user) {
         console.log('로그아웃 처리');
@@ -48,7 +48,6 @@ router.get('/logout', function(req, res, next) {
                     console.log('세션 삭제시 에러');
                     return;
                 }
-                console.log('세션 삭제 성공');
                 res.redirect('../board/list');
             }
         );     
@@ -56,6 +55,31 @@ router.get('/logout', function(req, res, next) {
         console.log('로그인 안되어 있음');
         res.redirect('../board/list');
     }
+});
+
+// 회원가입
+router.post('/signup', function(req,res,next){
+    var name = req.body.name;
+    var email = req.body.email;
+    var passwd = req.body.passwd;
+    var datas = [name,email,passwd];
+
+    var sql = "select email from users where email = ?";
+    conn.query(sql,email, function(err,rows)
+    {
+        if(err) console.error(err);
+        if(rows.length > 0)
+        {
+            res.send("<script>alert('동일한 이메일이 있습니다. 다시 가입해주세요');history.back();</script>");
+        } else {
+            var sql = "insert into users(name, email, passwd, created) values(?,?,?,now())";
+            conn.query(sql,datas, function (err, rows) {
+            if (err) console.error("err : " + err);
+            // res.send("<script>alert('회원가입이 완료되었습니다. 로그인 후 이용해주세요');</script>");
+            res.redirect('/board/list');
+    });
+        }
+    });
 });
 
 module.exports = router;

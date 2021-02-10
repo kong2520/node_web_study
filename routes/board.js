@@ -14,26 +14,25 @@ router.get('/list/:page', function(req, res, next) {
         "date_format(regdate,'%Y-%m-%d %H:%i:%s') regdate from board";
     conn.query(sql, function (err, rows) {
         if (err) console.error("err : " + err);
-        res.render('list', {title: '게시판 리스트', rows: rows});
+        res.render('list', {title: '게시판 리스트', rows: rows,session:req.session.user});
     });
 });
 
 
 // 글작성
 router.get('/write', function(req,res,next){
-    res.render('write',{title : "게시판 글 쓰기"});
+    res.render('write',{title : "게시판 글 쓰기",name:req.session.user.name});
 });
 
 router.post('/write', function(req,res,next){
-    console.log(req.body.name);
-    var name = req.body.name;
+    var name = req.session.user.name;
     var title = req.body.title;
     var content = req.body.content;
     var passwd = req.body.passwd;
-    var datas = [name,title,content,passwd];
+    var email = req.session.user.email;
+    var datas = [name,title,content,passwd,email];
  
- 
-    var sql = "insert into board(name, title, content, regdate, modidate, passwd,hit) values(?,?,?,now(),now(),?,0)";
+    var sql = "insert into board(name, title, content, regdate, modidate, passwd,hit,email) values(?,?,?,now(),now(),?,0,?)";
     conn.query(sql,datas, function (err, rows) {
         if (err) console.error("err : " + err);
         res.redirect('/board/list');
@@ -62,20 +61,30 @@ router.post('/update',function(req,res,next)
     var content = req.body.content;
     var passwd = req.body.passwd;
     var datas = [name,title,content,idx,passwd];
+
+    if (req.session.user){
+        if (req.session.user.name != name) {
+            res.send("<script>alert('글을 작성한 사용자가 아닙니다.');history.back();</script>");
+        } else{
+            var sql = "update board set name=? , title=?,content=?, modidate=now() where idx=? and passwd=?";
+            conn.query(sql,datas, function(err,result)
+            {
+                if(err) console.error(err);
+                if(result.affectedRows == 0)
+                {
+                    res.send("<script>alert('패스워드가 일치하지 않습니다.');history.back();</script>");
+                }
+                else
+                {
+                    res.redirect('/board/read/'+idx);
+                }
+            });
+        }
+    } else{
+        res.send("<script>alert('로그인 후 이용해주세요');history.back();</script>");
+    }
  
-    var sql = "update board set name=? , title=?,content=?, modidate=now() where idx=? and passwd=?";
-    conn.query(sql,datas, function(err,result)
-    {
-        if(err) console.error(err);
-        if(result.affectedRows == 0)
-        {
-            res.send("<script>alert('패스워드가 일치하지 않습니다.');history.back();</script>");
-        }
-        else
-        {
-            res.redirect('/board/read/'+idx);
-        }
-    });
+    
 });
 
 // 글삭제

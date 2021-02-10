@@ -5,8 +5,19 @@
     <link rel='stylesheet' href='/stylesheets/style.css'/>
 </head>
 <body>
-<h1><%= title %></h1>
-<a href="/board/write">글쓰기</a>
+    <% if (session) {
+    %>
+    <input type="button" class="btn" onclick=" location.href='/user/logout'" value="LOGOUT"/>
+    <%} else {%>
+    <input type="button" class="btn" onclick=" location.href='/user/login'" value="LOGIN"/>
+    <input type="button" class="btn" onclick=" location.href='/user/signup'" value="SIGNUP"/>
+    <%}%>
+    <h1><%= title %></h1>
+    
+<% if (session) { %>
+    <a href="/board/write">글쓰기</a>
+<%}%>
+
 <table border="1">
     <tr>
         <td>번호</td>

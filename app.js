@@ -6,7 +6,6 @@ var bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: false}))
 // routes
 const indexRoute = require("./routes/index");
-var mysqlRouter = require('./routes/mysql');
 var userRouter = require('./routes/user');
 var boardRouter = require('./routes/board');
 
@@ -29,7 +28,6 @@ app.use(express.static(__dirname + "/public"));
 
 // use routes
 app.use("/", indexRoute);
-app.use('/mysql', mysqlRouter);
 app.use('/board', boardRouter);
 app.use('/user',userRouter);
 
