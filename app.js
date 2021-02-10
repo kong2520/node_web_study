@@ -14,8 +14,7 @@ var expressSession = require('express-session');
 
 app.use(cookieParser());
 app.use(expressSession({
-    secret: 'my key',           //이때의 옵션은 세션에 세이브 정보를 저장할때 할때 파일을 만들꺼냐
-                                //아니면 미리 만들어 놓을꺼냐 등에 대한 옵션들임
+    secret: 'my key',           
     resave: true,
     saveUninitialized:true
 }));
