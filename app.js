@@ -5,7 +5,6 @@ var bodyParser = require('body-parser')
 
 app.use(bodyParser.urlencoded({ extended: false}))
 // routes
-const indexRoute = require("./routes/index");
 var userRouter = require('./routes/user');
 var boardRouter = require('./routes/board');
 
@@ -27,7 +26,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(__dirname + "/public"));
 
 // use routes
-app.use("/", indexRoute);
+app.use("/", boardRouter);
 app.use('/board', boardRouter);
 app.use('/user',userRouter);
 
